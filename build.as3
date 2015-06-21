@@ -1,0 +1,11 @@
+import redbean.*;
+import shell.FileSystem;
+
+compile( "src/httplib.as" );
+
+if( FileSystem.exists( "httplib.abc" ) )
+{
+	FileSystem.removeFile( "httplib.abc" );
+}
+
+FileSystem.move( "src/httplib.abc", "httplib.abc" );

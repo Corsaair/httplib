@@ -1,0 +1,101 @@
+#!/usr/bin/as3shebang -- 
+
+import shell.*;
+
+var markdownlib:* = Domain.currentDomain.load( "httplib.abc" );
+trace( markdownlib + " loaded" );
+
+import net.http.*;
+import flash.utils.*;
+
+trace( "----------------------" );
+function truncateEnd( str:String, maxlength:uint ):String
+{
+	return str.substr( 0, maxlength ) + "...";
+}
+
+function truncateStart( str:String, maxlength:uint ):String
+{
+	var total:uint = str.length;
+	return "..." + str.substr( total - maxlength, maxlength );
+}
+
+var myconn:* /*HttpConnection*/ = new HttpConnection();
+    myconn.onConnect = function():void
+    {
+        trace( "Connected" );
+        trace( myconn );
+    }
+    myconn.onDisconnect = function():void
+    {
+        trace( "Disconnected" );
+        trace( myconn );
+    }
+    myconn.onSend = function( bytes:* /*ByteArray*/, total:int ):void
+    {
+        bytes.position = 0;
+        trace( "sent " + total + "/" + bytes.length + " bytes" );
+        trace( "----------------------" );
+        trace( bytes.readUTFBytes( bytes.length ) );
+        trace( "----------------------" );
+    }
+    myconn.onReceive = function( bytes:* /*ByteArray*/, total:int ):void
+    {
+        bytes.position = 0;
+        trace( "received " + total + "/" + bytes.length + " bytes" );
+        trace( "----------------------" );
+        var str:String = bytes.readUTFBytes( bytes.length );
+        if( str.length > 500 )
+        {
+            trace( truncateEnd( str, 200 ) );
+            trace( truncateStart( str, 200 ) );
+        }
+        else
+        {
+            trace( str );
+        }
+        trace( "----------------------" );
+    }
+var httpRequest:* /*HttpRequest*/ = new HttpRequest();
+    httpRequest.connection = myconn;
+    //httpRequest.set( "http://www.google.com" );
+    //httpRequest.set( "http://www.burrrn.com" );
+    httpRequest.set( "http://www.burrrn.com/static/logo-256.png" );
+    //httpRequest.set( "http://wwwimages.adobe.com/www.adobe.com/content/dam/Adobe/en/devnet/flashplayer/pdfs/adobe-actionscript-compiler-20-release-notes.pdf" );
+
+var httpResponse:* /*HttpResponse*/ = httpRequest.send();
+trace( "----------------------" );
+trace( "  statusLine: " + httpResponse.statusLine );
+trace( "  statusCode: " + httpResponse.statusCode );
+trace( "reasonPhrase: " + httpResponse.reasonPhrase );
+trace( "     headers: \n" + httpResponse.headers.join( "\n" ) );
+trace( "----------------------" );
+trace( httpResponse.bodyText );
+trace( "----------------------" );
+trace( "from request:" );
+trace( httpResponse.httpRequest.toString() );
+
+if( httpResponse.contentType == "image/png" )
+{
+    trace( "saving PNG of " + httpResponse.contentLength + " bytes" );
+    var img:* /*ByteArray*/ = httpResponse.getBytes();
+    FileSystem.writeByteArray( "image.png", img );
+}
+
+if( httpResponse.contentType == "application/pdf" )
+{
+    trace( "saving PDF of " + httpResponse.contentLength + " bytes" );
+    var pdf:* /*ByteArray*/ = httpResponse.getBytes();
+    FileSystem.writeByteArray( "asc2.pdf", pdf );
+}
+
+
+trace( "----------------------" );
+trace( httpResponse.httpRequest.connection );
+trace( "----------------------" );
+//trace(  httpRequest.toDebugString( true ) );
+//trace(  httpRequest.toString() );
+trace( "----------------------" );
+//trace(  httpResponse.toDebugString( true ) );
+//trace(  httpResponse.toString() );
+trace( "----------------------" );
