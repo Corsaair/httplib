@@ -5,16 +5,16 @@ package net.http
     
     import flash.utils.ByteArray;
 
-	/**
-	 * HTTP Response message class.
+    /**
+     * HTTP Response message class.
      * 
      * <p>
      * A HTTP Response consist of a status line, a collection of header fields,
      * and an optional body.
      * </p>
-	 */
-	public class HttpResponse extends HttpMessage
-	{
+     */
+    public class HttpResponse extends HttpMessage
+    {
         
         private static const _CR:String   = "\r";
         private static const _LF:String   = "\n";
@@ -28,10 +28,10 @@ package net.http
         
         private var _request:HttpRequest;
         
-		public function HttpResponse()
-		{
-			super();
-		}
+        public function HttpResponse()
+        {
+            super();
+        }
         
         public function get statusCode():String { return _statusCode; }
         public function set statusCode( value:String ):void { _statusCode = value; }
@@ -192,6 +192,6 @@ package net.http
             return responseBytes;
         }
         
-	}
+    }
 
 }

@@ -3,8 +3,8 @@ package net.http
 {
     import flash.utils.ByteArray;
 
-	/**
-	 * The HTTP Message class is the base class for <code>HttpRequest</code>
+    /**
+     * The HTTP Message class is the base class for <code>HttpRequest</code>
      * and <code>HttpResponse</code>.
      * 
      * <p>
@@ -16,9 +16,9 @@ package net.http
      * </p>
      * 
      * @see https://hc.apache.org/httpcomponents-core-ga/tutorial/html/fundamentals.html HTTP message fundamentals
-	 */
-	public class HttpMessage
-	{
+     */
+    public class HttpMessage
+    {
         public static const HTTP_1_0:String = "HTTP/1.0";
         public static const HTTP_1_1:String = "HTTP/1.1";
         
@@ -44,9 +44,9 @@ package net.http
         /**
          * Creates a HTTP message.
          */
-		public function HttpMessage()
-		{
-			super();
+        public function HttpMessage()
+        {
+            super();
             
             _httpVersion = HTTP_1_1;
             
@@ -55,7 +55,7 @@ package net.http
             
             _body       = new ByteArray();
             
-		}
+        }
         
         /* ---- headers ---- */
         
@@ -440,6 +440,6 @@ package net.http
             return _body;
         }
         
-	}
+    }
 
 }

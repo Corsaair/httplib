@@ -7,16 +7,16 @@ package net.http
     
     import net.URI;
 
-	/**
-	 * HTTP Request message class.
+    /**
+     * HTTP Request message class.
      * 
      * <p>
      * A HTTP Request consist of request line, a collection of header fields,
      * and an optional body.
      * </p>
-	 */
-	public class HttpRequest extends HttpMessage
-	{
+     */
+    public class HttpRequest extends HttpMessage
+    {
         
         private static var _DEFAULT_PORT:int = -1;
         
@@ -50,9 +50,9 @@ package net.http
         protected var _connection:HttpConnection;
         protected var _destination:URI;
         
-		public function HttpRequest( destination:String = "" )
-		{
-			super();
+        public function HttpRequest( destination:String = "" )
+        {
+            super();
             
             _ctor();
             
@@ -60,7 +60,7 @@ package net.http
             {
                 set( destination );
             }
-		}
+        }
         
         private function _ctor():void
         {
@@ -468,6 +468,6 @@ package net.http
             return requestBytes;
         }
         
-	}
+    }
 
 }

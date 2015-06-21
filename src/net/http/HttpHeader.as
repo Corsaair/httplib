@@ -13,10 +13,10 @@ package net.http
         public static const CONTENT_LENGTH:String    = "Content-Length";
         public static const CONTENT_ENCODING:String  = "Content-Encoding";
         public static const HOST:String              = "Host";
-	    public static const ETAG:String              = "ETag";
-	    public static const CONNECTION:String        = "Connection";
-	    public static const KEEP_ALIVE:String        = "Keep-Alive";
-	    public static const CLOSE:String             = "Close";
+        public static const ETAG:String              = "ETag";
+        public static const CONNECTION:String        = "Connection";
+        public static const KEEP_ALIVE:String        = "Keep-Alive";
+        public static const CLOSE:String             = "Close";
         
         public static const USER_AGENT:String        = "User-Agent";
         

@@ -153,19 +153,19 @@ package net.http
         
         public static function parse_http_statusline( str:String ):Object
         {
-        	var statusline:Object = {};
-        		statusline.protocolVersion = "";
-        		statusline.statusCode      = "";
-        		statusline.reasonPhrase    = "";
+            var statusline:Object = {};
+                statusline.protocolVersion = "";
+                statusline.statusCode      = "";
+                statusline.reasonPhrase    = "";
         
-        	var pos1:int = str.indexOf( _SP );
-        	var pos2:int = str.indexOf( _SP, pos1 + 1 );
+            var pos1:int = str.indexOf( _SP );
+            var pos2:int = str.indexOf( _SP, pos1 + 1 );
             
-        	statusline.protocolVersion = str.substring( 0, pos1 );
-        	statusline.statusCode      = str.substring( pos1 + 1 , pos2 );
-        	statusline.reasonPhrase    = str.substring( pos2 + 1 );
+            statusline.protocolVersion = str.substring( 0, pos1 );
+            statusline.statusCode      = str.substring( pos1 + 1 , pos2 );
+            statusline.reasonPhrase    = str.substring( pos2 + 1 );
         
-        	return statusline;
+            return statusline;
         }
         
         public static function parse_http_response( bytes:ByteArray, trimEOL:Boolean = true ):HttpResponse
@@ -197,8 +197,8 @@ package net.http
             
             if( trimEOL )
             {
-        		statusLine   = _trim( statusLine, [ _CR, _LF ] );
-        		headerFields = _trim( headerFields, [ _CR, _LF ] );
+                statusLine   = _trim( statusLine, [ _CR, _LF ] );
+                headerFields = _trim( headerFields, [ _CR, _LF ] );
             }
             
             var status:Object = parse_http_statusline( statusLine );
@@ -270,7 +270,7 @@ package net.http
             }
             while( buffer != "" )
             
-        	return str;
+            return str;
         }
         
         
