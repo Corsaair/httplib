@@ -9,7 +9,7 @@ Here the focus is on the parsing of raw HTTP into structured objects
 and the opposite, from Object to well-formed HTTP.
 
 This is the result of an earlier prototype which has been tested
-under Apache + CGI to serve the web site [burrrn.com](htttp://www.burrrn.com).
+under Apache + CGI to serve the web site [burrrn.com](http://www.burrrn.com).
 
 For the time being this library will encompass everything under
 the `net` package: `net.http`, `net.http.cgi`, etc.
