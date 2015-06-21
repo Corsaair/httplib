@@ -2,14 +2,14 @@ httplib
 =======
 
 A simple and efficient HTTP library for ActionScript 3.0 which
-should lead to some more advanced code.
+should lead to some more advanced and interesting code.
 
 
 Here the focus is on the parsing of raw HTTP into structured objects
 and the opposite, from Object to well-formed HTTP.
 
 This is the result of an earlier prototype which has been tested
-under Apache + CGI to serve the web site htttp://www.burrrn.com .
+under Apache + CGI to serve the web site [burrrn.com](htttp://www.burrrn.com).
 
 For the time being this library will encompass everything under
 the `net` package: `net.http`, `net.http.cgi`, etc.
@@ -34,5 +34,6 @@ Create a symlink of redbean at the root of the project
 Build the library  
 `./redbean`
 
-Run the testg with as3shebang
+Run the testg with as3shebang  
 `./test_httplib`
+
