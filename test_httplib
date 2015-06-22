@@ -2,8 +2,8 @@
 
 import shell.*;
 
-var markdownlib:* = Domain.currentDomain.load( "httplib.abc" );
-trace( markdownlib + " loaded" );
+var httplib:* = Domain.currentDomain.load( "httplib.abc" );
+trace( httplib + " loaded" );
 
 import net.http.*;
 import flash.utils.*;

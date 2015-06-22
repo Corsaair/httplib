@@ -34,6 +34,6 @@ Create a symlink of redbean at the root of the project
 Build the library  
 `./redbean`
 
-Run the testg with as3shebang  
+Run the test with as3shebang  
 `./test_httplib`
 
