@@ -782,6 +782,7 @@ package net
          * style query syntax via the get/setQueryValue() and
          * get/setQueryByMap() functions.  Those functions should be used
          * instead if the common syntax is being used.
+         * </p>
          * 
          * <p>The URI RFC does not specify any particular
          * syntax for the query part of a URI.  It is intended to allow
@@ -789,7 +790,7 @@ package net
          * However, most systems have standardized on the typical CGI
          * format:</p>
          * 
-         * <listing>http://site.com/script.php?param1=value1&param2=value2</listing>
+         * <listing>http://site.com/script.php?param1=value1&#38;param2=value2</listing>
          * 
          * <p>This class has specific support for this query syntax</p>
          * 
@@ -998,7 +999,7 @@ package net
         /**
          * Get the value for the specified named in the query part.  This
          * assumes the query part of the URI is in the common
-         * "name1=value1&name2=value2" syntax.  Do not call this function
+         * "name1=value1&#38;name2=value2" syntax.  Do not call this function
          * if you are using a custom query syntax.
          * 
          * @param name  name of the query value to get.
@@ -1188,7 +1189,7 @@ package net
          * intended to be called on each individual "name" and "value"
          * in the query making sure that nothing in the name or value
          * strings contain characters that would conflict with the query
-         * syntax (e.g. '=' and '&').
+         * syntax (e.g. '=' and '&#38;').
          * 
          * @param unescaped     unescaped string that is to be escaped.
          * 
@@ -1438,7 +1439,9 @@ package net
          * Get the ".xyz" file extension from the filename in the URI.
          * For example, if we have the following URI:
          * 
-         * <listing>http://something.com/path/to/my/page.html?form=yes&name=bob#anchor</listing>
+         * <listing>
+         * http://something.com/path/to/my/page.html?form=yes&#38;name=bob#anchor
+         * </listing>
          * 
          * <p>This will return ".html".</p>
          * 
