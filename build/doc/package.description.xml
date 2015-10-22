@@ -1,0 +1,77 @@
+<overviews>
+	<all-packages>
+		<description><![CDATA[
+			The &lt;b&gt;HTTP&lt;/b&gt; library.&lt;br&gt;
+			&lt;br&gt;
+			A lightweight HTTP library which allow to work with the
+			HTTP protocol either from the server (CGI under Apache)
+			or the command-line as http client or server.
+			&lt;br&gt;
+			&lt;br&gt;
+			This library does not fully support Windows.
+			&lt;br&gt;
+			&lt;br&gt;
+			&lt;a href="https://github.com/Corsaair/httplib/wiki" target="_blank"&gt;Wiki Documentation&lt;/a&gt;
+		]]></description>
+	</all-packages>
+	<packages>
+
+		<package name="net" >
+			<shortDescription><![CDATA[The network library.]]></shortDescription>
+			<description><![CDATA[
+				All classes, functions, etc. for networking.
+			]]></description>
+		</package>
+
+		<package name="net.mediatypes" >
+			<shortDescription><![CDATA[The Internet Media type library.]]></shortDescription>
+			<description><![CDATA[
+				All classes, functions, etc. for MIME types.
+			]]></description>
+		</package>
+
+		<package name="net.http" >
+			<shortDescription><![CDATA[The HTTP library.]]></shortDescription>
+			<description><![CDATA[
+				All classes, functions, etc. for working with the HTTP protocol.
+			]]></description>
+		</package>
+
+		<package name="net.http.cgi" >
+			<shortDescription><![CDATA[The CGI library.]]></shortDescription>
+			<description><![CDATA[
+				All classes, functions, etc. for manipulating HTTP requests and responses
+				as a CGI process running under Apache.
+			]]></description>
+		</package>
+
+		<package name="net.http.responses" >
+			<shortDescription><![CDATA[HTTP Responses.]]></shortDescription>
+			<description><![CDATA[
+				Different type of responses.
+			]]></description>
+		</package>
+
+		<package name="net.http.router" >
+			<shortDescription><![CDATA[The HTTP Router library.]]></shortDescription>
+			<description><![CDATA[
+				Allows to react to the PATH requested.
+			]]></description>
+		</package>
+
+		<package name="net.http.sessions" >
+			<shortDescription><![CDATA[HTTP Sessions.]]></shortDescription>
+			<description><![CDATA[
+				Manage HTTP users sessions on the server-side.
+			]]></description>
+		</package>
+
+		<package name="net.http.web" >
+			<shortDescription><![CDATA[The Web framework.]]></shortDescription>
+			<description><![CDATA[
+				Defines a Web server, its configuration, as well as modules and pages.
+			]]></description>
+		</package>
+
+	</packages>
+</overviews>
