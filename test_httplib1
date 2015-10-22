@@ -1,0 +1,36 @@
+#!/usr/bin/as3shebang -- 
+
+import shell.*;
+
+/* IMPORTANT
+   here all httplib dependencies
+   - base64lib
+   - cryptolib
+
+   this one is optional
+   - ansilib
+   if you comment it out it will not break the code
+*/
+var ansilib:* = Domain.currentDomain.load( "lib-abc/ansilib.abc" );
+trace( ansilib + " loaded" );
+
+var base64lib:* = Domain.currentDomain.load( "lib-abc/base64lib.abc" );
+trace( base64lib + " loaded" );
+
+var cryptolib:* = Domain.currentDomain.load( "lib-abc/cryptolib.abc" );
+trace( cryptolib + " loaded" );
+
+var httplib:* = Domain.currentDomain.load( "httplib.abc" );
+trace( httplib + " loaded" );
+
+import net.http.*;
+import flash.utils.*;
+
+trace( "----------------------" );
+
+
+var httpRequest = new HttpRequest();
+	httpRequest.set( "http://www.as3lang.org" );
+
+var httpResponse = httpRequest.send();
+trace( httpResponse.toDebugString( true, 1024 ) );
