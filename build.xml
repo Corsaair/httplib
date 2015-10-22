@@ -38,7 +38,7 @@
         <property name="build.fatswc" value="true" />
         <property name="build.nodoc" value="false" />
 
-        <property name="build.release" value="false" />
+        <property name="build.release" value="true" />
         <property name="build.nozip" value="false" />
 
         
