@@ -76,9 +76,9 @@ package net.http
          * 
          * @param header the <code>Httpheader</code> to add.
          * @param overwrite overwrite an already existing
-         * header if set to <code>true</true>, otherwise add a duplicate.
+         * header if set to <code>true</code>, otherwise add a duplicate.
          */ 
-        public function addHeader( header:HttpHeader, overwrite:Boolean = false ):void
+        public function addHeader( header:Header, overwrite:Boolean = false ):void
         {
             var index:uint;
             
@@ -94,7 +94,7 @@ package net.http
             {
                 if( overwrite )
                 {
-                    var existing:HttpHeader = getHeader( header.name );
+                    var existing:Header = getHeader( header.name );
                         existing.value = header.value;
                 }
                 else
@@ -122,7 +122,7 @@ package net.http
         public function addHeaderLine( name:String, value:String = "",
                                        overwrite:Boolean = false ):void
         {
-            var header:HttpHeader = new HttpHeader( name, value );
+            var header:Header = new HttpHeader( name, value );
             addHeader( header, overwrite );
         }
         
@@ -130,7 +130,7 @@ package net.http
          * Remove an <code>Httpheader</code>.
          * 
          * <p>
-         * If more than one header matches the <cod>name</code>,
+         * If more than one header matches the <code>name</code>,
          * they are all removed.
          * </p>
          * 
@@ -157,7 +157,7 @@ package net.http
          * 
          * @param name the header <code>name</code> to find.
          */
-        public function getHeader( name:String ):HttpHeader
+        public function getHeader( name:String ):Header
         {
             if( hasHeader( name ) )
             {
@@ -193,7 +193,7 @@ package net.http
         {
             if( hasHeader( name ) )
             {
-                return (_headers[ _headersMap[ name ][0] ] as HttpHeader).value;
+                return (_headers[ _headersMap[ name ][0] ] as Header).value;
             }
             
             return "";
@@ -231,6 +231,11 @@ package net.http
         public function set httpVersion( value:String ):void { _httpVersion = value; }
         
         /**
+         * Returns the list of internal Header objects.
+         */ 
+        public function get headersList():Array { return _headers; }
+        
+        /**
          * Returns a string formated list of all the headers contained
          * in this HTTP Message.
          */
@@ -251,23 +256,59 @@ package net.http
             return list;
         }
         
+        /* Note:
+           Allow to add headers in batch
+           either
+           this.headers = [ new HttpHeader( "hello", "world" ),
+                            new HttpHeader( "foobar", "a test" ),
+                            new HttpHeader( "another", "test" ) ];
+           or
+           this.headers = [ ["hello", "world"],
+                            ["foobar", "a test"],
+                            ["another", "test"] ];
+           or even mixed
+           this.headers = [ new HttpHeader( "hello", "world" ),
+                            ["foobar", "a test"],
+                            new HttpHeader( "another", "test" ) ];
+        */
+        /** @private */
+        public function set headers( value:Array ):void
+        {
+            var i:uint;
+            var len:uint = value.length;
+            var h:*;
+            for( i = 0; i < len; i++ )
+            {
+                h = value[i];
+                if( h is Header )
+                {
+                    addHeader( h );
+                }
+                else if( (h is Array) && (h.length == 2) )
+                {
+                    addHeaderLine( h[0], h[1] );
+                }
+            }
+        }
+        
         /**
          * The HTTP header "Content-Type".
          */
         public function get contentType():String
         {
-            var header:HttpHeader = getHeader( HttpHeader.CONTENT_TYPE );
+            var header:Header = getHeader( HttpHeader.CONTENT_TYPE );
             if( header )
             {
                 return String( header.value );
             }
             
-            return "";
+            //return "";
+            return null;
         }
         /** @private */
         public function set contentType( value:String ):void
         {
-            var header:HttpHeader = new HttpHeader( HttpHeader.CONTENT_TYPE, value );
+            var header:Header = new HttpHeader( HttpHeader.CONTENT_TYPE, value );
             addHeader( header, true );
         }
         
@@ -276,7 +317,7 @@ package net.http
          */
         public function get contentLength():uint
         {
-            var header:HttpHeader = getHeader( HttpHeader.CONTENT_LENGTH );
+            var header:Header = getHeader( HttpHeader.CONTENT_LENGTH );
             if( header )
             {
                 return uint( header.value );
@@ -287,7 +328,7 @@ package net.http
         /** @private */
         public function set contentLength( value:uint ):void
         {
-            var header:HttpHeader = new HttpHeader( HttpHeader.CONTENT_TYPE, String(value) );
+            var header:Header = new HttpHeader( HttpHeader.CONTENT_LENGTH, String(value) );
             addHeader( header, true );
         }
         
@@ -296,7 +337,7 @@ package net.http
          */
         public function get contentEncoding():String
         {
-            var header:HttpHeader = getHeader( HttpHeader.CONTENT_ENCODING );
+            var header:Header = getHeader( HttpHeader.CONTENT_ENCODING );
             if( header )
             {
                 return String( header.value );
@@ -307,7 +348,7 @@ package net.http
         /** @private */
         public function set contentEncoding( value:String ):void
         {
-            var header:HttpHeader = new HttpHeader( HttpHeader.CONTENT_ENCODING, value );
+            var header:Header = new HttpHeader( HttpHeader.CONTENT_ENCODING, value );
             addHeader( header, true );
         }
         
@@ -316,7 +357,7 @@ package net.http
          */
         public function get accept():String
         {
-            var header:HttpHeader = getHeader( HttpHeader.ACCEPT );
+            var header:Header = getHeader( HttpHeader.ACCEPT );
             if( header )
             {
                 String( header.value );
@@ -327,7 +368,7 @@ package net.http
         /** @private */
         public function set accept( value:String ):void
         {
-            var header:HttpHeader = new HttpHeader( HttpHeader.ACCEPT, value );
+            var header:Header = new HttpHeader( HttpHeader.ACCEPT, value );
             addHeader( header, true );
         }
         
@@ -336,7 +377,7 @@ package net.http
          */
         public function get acceptEncoding():String
         {
-            var header:HttpHeader = getHeader( HttpHeader.ACCEPT_ENCODING );
+            var header:Header = getHeader( HttpHeader.ACCEPT_ENCODING );
             if( header )
             {
                 String( header.value );
@@ -347,7 +388,7 @@ package net.http
         /** @private */
         public function set acceptEncoding( value:String ):void
         {
-            var header:HttpHeader = new HttpHeader( HttpHeader.ACCEPT_ENCODING, value );
+            var header:Header = new HttpHeader( HttpHeader.ACCEPT_ENCODING, value );
             addHeader( header, true );
         }
         
@@ -391,7 +432,7 @@ package net.http
          */ 
         public function isConnectionPersistent():Boolean
         {
-            var header:HttpHeader = getHeader( HttpHeader.CONNECTION );
+            var header:Header = getHeader( HttpHeader.CONNECTION );
             
             if( !header )
             {

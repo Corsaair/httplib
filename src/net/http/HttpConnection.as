@@ -289,7 +289,7 @@ package net.http
             
             return _remoteAddresses;
         }
-         
+        
         /**
          * Open a connection to a <code>host</code> on a specific <code>port</code>.
          * 

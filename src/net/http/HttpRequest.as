@@ -3,6 +3,8 @@ package net.http
 {
     //import ansi.*;
     
+    //import encoding.ansi.AnsiString; //detected at runtime
+    
     import flash.utils.ByteArray;
     
     import net.URI;
@@ -15,10 +17,11 @@ package net.http
      * and an optional body.
      * </p>
      */
-    public class HttpRequest extends HttpMessage
+    public class HttpRequest extends HttpMessage implements Request
     {
         
         private static var _DEFAULT_PORT:int = -1;
+        private static var _MAX_PORT:int     = 0xffff; //65535
         
         private static const _CR:String   = "\r";
         private static const _LF:String   = "\n";
@@ -29,10 +32,46 @@ package net.http
         /**
          * Builds a GET request.
          */ 
-        public static function get( destination:String ):HttpRequest
+        public static function GET( destination:String ):HttpRequest
         {
             var request:HttpRequest = new HttpRequest();
-                request.method = HttpMethod.GET;
+                request.method = RequestMethod.GET;
+                request.set( destination );
+            
+            return request;
+        }
+        
+        /**
+         * Builds a PUT request.
+         */ 
+        public static function PUT( destination:String ):HttpRequest
+        {
+            var request:HttpRequest = new HttpRequest();
+                request.method = RequestMethod.PUT;
+                request.set( destination );
+            
+            return request;
+        }
+        
+        /**
+         * Builds a POST request.
+         */ 
+        public static function POST( destination:String ):HttpRequest
+        {
+            var request:HttpRequest = new HttpRequest();
+            request.method = RequestMethod.POST;
+            request.set( destination );
+            
+            return request;
+        }
+        
+        /**
+         * Builds a DELETE request.
+         */ 
+        public static function DELETE( destination:String ):HttpRequest
+        {
+            var request:HttpRequest = new HttpRequest();
+                request.method = RequestMethod.DELETE;
                 request.set( destination );
             
             return request;
@@ -68,7 +107,7 @@ package net.http
             _protocol = "http";
             _port     = _DEFAULT_PORT;
             
-            _method   = HttpMethod.GET;
+            _method   = RequestMethod.GET;
             _path     = "/";
             _query    = "";
         }
@@ -80,7 +119,16 @@ package net.http
         public function get requestLine():String
         {
             var line:String = "";
+            
+            if( method != "" )
+            {
                 line += method;
+            }
+            else
+            {
+                line += RequestMethod.GET;
+            }
+                
                 line += _SP;
             
             if( path == "" )
@@ -144,6 +192,18 @@ package net.http
         
         public function get port():int
         {
+            if( _destination && _destination.port )
+            {
+                if( _destination.port == "" )
+                {
+                    _port = _DEFAULT_PORT;
+                }
+                else
+                {
+                    _port = parseInt( _destination.port );
+                }
+            }
+            
             if( _port == _DEFAULT_PORT )
             {
                 switch( protocol )
@@ -160,7 +220,20 @@ package net.http
             
             return _port;
         }
-        public function set port( value:int ):void { _port = value; }
+        public function set port( value:int ):void
+        {
+            if( value < 0 )
+            {
+                value = _DEFAULT_PORT;
+            }
+            
+            if( value > _MAX_PORT )
+            {
+                value = _MAX_PORT;
+            }
+            
+            _port = value;
+        }
         
         
         public function get method():String { return _method; }
@@ -282,7 +355,7 @@ package net.http
                 this.connection = connection;
             }
             
-            if( _port != _DEFAULT_PORT )
+            if( this.port != _DEFAULT_PORT )
             {
                 this.connection.open( host, port );    
             }
@@ -294,9 +367,14 @@ package net.http
         
         public function send():HttpResponse
         {
-            if( (connection == null) || !connection.connected )
+            if( (connection == null) || (connection && !connection.connected) )
             {
                 open( connection );
+            }
+            
+            if( !connection.connected )
+            {
+                return null;
             }
             
             var response:HttpResponse;
@@ -308,12 +386,12 @@ package net.http
                 response = HttpUtils.parse_http_response( data, true );
             }
             
-            if( response.statusCode == "302" )
+            if( response && (response.statusCode == "302") )
             {
                 // for a redirect we always close the connection
                 connection.close();
                 var location:String = response.getHeaderValue( "Location" );
-                trace( "location changed = [" + location + "]" );
+                //trace( "location changed = [" + location + "]" );
                 set( location );
                 setHostHeader();
                 response = send();
@@ -324,7 +402,11 @@ package net.http
                 connection.close();
             }
             
-            response.httpRequest = this;
+            if( response )
+            {
+                response.httpRequest = this;
+            }
+            
             return response;
         }
         
@@ -343,19 +425,30 @@ package net.http
                 addHeaderLine( HttpHeader.USER_AGENT, "httplib" );
             }
             
-            if( (method == HttpMethod.POST) &&
+            if( ((method == RequestMethod.POST) || (method == RequestMethod.PUT)) &&
                !hasHeader( HttpHeader.CONTENT_LENGTH ) )
             {
                 contentLength = bodyBytes.length;
             }
             
-            persistence( false );
+            
+            if( !hasHeader( HttpHeader.CONNECTION ) )
+            {
+                persistence( false );
+            }
             
             var i:uint;
             var len:uint = headers.length;
+            //var header:Header;
+            var header:HttpHeader;
             for( i = 0; i < len; i++ )
             {
-                request += headers[i] + _CRLF;
+                header = _headers[i];
+                if( header.value )
+                {
+                    //request += HttpHeader(header).toString() + _CRLF;
+                    request += header.toString() + _CRLF;
+                }
             }
             
             
@@ -441,6 +534,73 @@ package net.http
             return str;
         }
         */
+        
+        public function toDebugString( ansi:Boolean = true, maxBody:int = -1 ):String
+        {
+            var str:String = "";
+            
+                str += "{「K」HttpRequest「W」" + "\n";
+                str += "  ├─「K 」 requestLine:「C 」 " + requestLine + "「!W 」\n";
+                str += "  ├─「K 」 headers:「C 」" + "\n";
+            
+            var i:uint;
+            var len:uint = _headers.length;
+            for( i = 0; i < len; i++ )
+            {
+                if( i == (len-1) )
+                {
+                    str += "  │   └─「K 」 ";   
+                }
+                else
+                {
+                    str += "  │   ├─「K 」 ";    
+                }
+                
+                str += _headers[i].name + "「C 」";
+                str += ":「W 」 ";
+                str += _headers[i].value + "「Y 」";
+                str += "\n";
+            }
+            str += "  └─「K 」 body:「C 」 " + _body.length + " bytes「R 」"  + "\n";
+            
+            var pre:String    = "      └─ 「K 」|「W」";
+            var prespc:String = "         │「W」";
+            
+            var lines:Array;
+            
+            if( maxBody > -1 )
+            {
+                var tmp:String = body.substr( 0, maxBody );
+                lines = tmp.split( "\n" );
+            }
+            else
+            {
+                lines = body.split( "\n" );
+            }
+            
+            var j:uint;
+            var l:uint = lines.length;
+            for( j = 0; j < l; j++ )
+            {
+                if( j == 0 )
+                {
+                    str += pre + lines[j] + "「Y 」" + "\n";
+                }
+                else
+                {
+                    str += prespc + lines[j] + "「Y 」" + "\n";   
+                }
+            }
+            
+            if( maxBody > -1 )
+            {
+                str +=  prespc + "...「K 」" + "\n";
+            }
+            
+            str += "}「K 」";
+            
+            return HttpUtils.format_ansi( str, ansi );
+        }
         
         /**
          * Returns the full string representation of the request.
