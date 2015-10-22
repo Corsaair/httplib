@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+
+<!--
+    Require min Ant 1.9.1
+ -->
+<project name="httplib" default="main" basedir="."
+    xmlns:if="ant:if"
+    xmlns:unless="ant:unless" >
+
+    <target name="clean">
+        
+        <delete dir="${basedir}/bin-release" />
+        <delete dir="${basedir}/bin-deploy" />
+        <delete dir="${basedir}/docs" />
+        
+    </target>
+
+    <target name="before" depends="clean">
+
+        <!-- override -->
+        <property file="user.properties"/>
+
+        <!-- config -->
+        <property name="FLEX_HOME_MAC" value="/sdk/flex/4_6" />
+        <property name="FLEX_HOME_WIN" value="c:/sdk/flex/4_6" />
+
+        <property name="build.info" value="true" />
+
+        <property name="build.component" value="true" />
+        <property name="build.noswc" value="false" />
+        <property name="build.noabc" value="false" />
+
+        <property name="build.documentation" value="true" />
+        <property name="build.fatswc" value="true" />
+        <property name="build.nodoc" value="false" />
+
+        <property name="build.release" value="false" />
+        <property name="build.nozip" value="false" />
+
+        
+        <condition property="FLEX_HOME" value="${FLEX_HOME_MAC}">
+            <os family="mac" />
+        </condition>
+
+        <condition property="FLEX_HOME" value="${FLEX_HOME_WIN}">
+            <os family="windows" />
+        </condition>
+
+        <tstamp>
+            <format property="TODAY" pattern="dd MMMM yyyy" />
+            <format property="TODAY_FILE" pattern="Y-MM-dd" />
+        </tstamp>
+
+        <property name="project.name" value="${ant.project.name}" />
+        <property name="project.fullname" value="HTTP Library" />
+        <property file="${basedir}/src/version.properties"/>
+        <property name="project.version" value="${version.major}.${version.minor}.${version.build}" />
+
+        <taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+
+        <mkdir dir="${basedir}/bin-release" />
+        <mkdir dir="${basedir}/bin-deploy" />
+        <mkdir dir="${basedir}/docs/${project.name}" />
+
+        <!-- debug -->
+        <sequential if:true="${build.info}">
+	        <echo message="${project.fullname}" />
+	        <echo message="${project.name} v${project.version}" />
+	        <echo message="properties:" />
+	        <echo message="            FLEX_HOME = ${FLEX_HOME}" />
+	        <echo message="                TODAY = ${TODAY}" />
+	        <echo message="           TODAY_FILE = ${TODAY_FILE}" />
+	        <echo message="actions:" />
+	        <echo message="            component = ${build.component}" />
+	        <echo message="        documentation = ${build.documentation}" />
+	        <echo message="              release = ${build.release}" />
+	        <echo message="options:" />
+	        <echo message="          build.noswc = ${build.noswc}" />
+	        <echo message="          build.noabc = ${build.noabc}" />
+	        <echo message="          build.nodoc = ${build.nodoc}" />
+	        <echo message="         build.fatswc = ${build.fatswc}" />
+	        <echo message="          build.nozip = ${build.nozip}" />
+        </sequential>
+
+    </target>
+
+    <target name="main" depends="before,clean,compile,after">
+    </target>
+
+    <target name="compile">
+
+        <antcall target="compile-swc" if:true="${build.component}"/>
+
+        <antcall target="compile-abc" if:true="${build.component}"/>
+
+        <antcall target="compile-doc" if:true="${build.documentation}"/>
+
+        <antcall target="compile-release" if:true="${build.release}"/>
+
+    </target>
+
+    <target name="compile-swc">
+
+    	<sequential unless:true="${build.noswc}">
+
+	        <compc
+	            output="${basedir}/bin-release/${project.name}.swc"
+	        >
+	            <load-config>${basedir}/build/flex-config.xml</load-config>
+	            <strict>false</strict>
+	            <optimize>true</optimize>
+	            <warnings>false</warnings>
+	            <verbose-stacktraces>true</verbose-stacktraces>
+	            <compute-digest>false</compute-digest>
+
+	            <external-library-path dir="${basedir}/lib-swc" append="true">
+	                <include name="redtamarin.swc"/>
+	            </external-library-path>
+
+	            <include-sources dir="src" includes="${project.name}.as" />
+
+	        </compc>
+
+        </sequential>
+
+    </target>
+
+    <target name="compile-abc">
+
+        <sequential unless:true="${build.noabc}">
+
+            <exec executable="redbean" dir="${basedir}" failonerror="true">
+            </exec>
+
+            <move file="${basedir}/${project.name}.abc" todir="${basedir}/bin-release" />
+
+        </sequential>
+
+    </target>
+
+    <target name="compile-doc">
+
+        <sequential unless:true="${build.nodoc}">
+            
+            
+            <asdoc
+                output="${basedir}/docs/${project.name}"
+                templates-path="${basedir}/build/doc/templates/"
+                main-title="${project.fullname}"
+                footer="${project.name} v${project.version}"
+                window-title="${project.fullname} v${project.version}"
+                left-frameset-width="256"
+                keep-xml="${build.fatswc}"
+                skip-xsl="false"
+                warnings="false"
+                strict="false"
+                failonerror="true"
+                fork="true"
+            >
+                <verbose-stacktraces>true</verbose-stacktraces>
+                <load-config>${basedir}/build/flex-config.xml</load-config>
+
+                <external-library-path dir="${basedir}/lib-swc" append="true">
+                    <include name="redtamarin.swc"/>
+                </external-library-path>
+
+                <!-- this does not work, not all methods and properties are not documented -->
+                <!--
+                <doc-sources path-element="${basedir}/src/${project.name}.as"/>
+                 -->
+
+                <!-- this alternative works -->
+                <doc-sources path-element="${basedir}/src"/>
+                <source-path path-element="${basedir}/src" />
+                <exclude-sources path-element="${basedir}/src/${project.name}.as" />
+
+                <package-description-file>${basedir}/build/doc/package.description.xml</package-description-file>
+            </asdoc>
+            
+            <sequential if:true="${build.fatswc}">
+
+                <!-- update swc with asdoc xml -->
+                <zip destfile="${basedir}/bin-release/${project.name}.swc" update="true">
+                    <zipfileset dir="${basedir}/docs/${project.name}/tempdita" prefix="docs">
+                        <include name="*.xml" />
+                        <include name="*.dita" />
+                        <exclude name="ASDoc_Config.xml" />
+                        <exclude name="overviews.xml" />
+                    </zipfileset>
+                </zip>
+
+            </sequential>
+
+            <delete dir="${basedir}/docs/${project.name}/tempdita" />
+            
+        </sequential>
+
+    </target>
+
+    <target name="compile-release">
+
+        <sequential unless:true="${build.nozip}">
+
+            <!-- generate documentation.zip -->
+            <zip destfile="${basedir}/bin-release/documentation.zip"
+                 basedir="${basedir}/docs/${project.name}"
+                 unless:true="${build.nodoc}" />
+
+            <!-- copy all files to deploy dir -->
+            <copy todir="${basedir}/bin-deploy">
+                <fileset dir="${basedir}">
+                    <include name="*.txt" />
+                    <include name="*.md" />
+                    <include name="LICENSE" />
+                </fileset>
+                <fileset dir="${basedir}/bin-release">
+                    <include name="*.swc" />
+                    <include name="*.abc" />
+                </fileset>
+                <file file="${basedir}/bin-release/documentation.zip" unless:true="${build.nodoc}" />
+            </copy>
+
+            <!-- zip all files -->
+            <zip destfile="${basedir}/bin-deploy/${project.name}-${project.version}.zip"
+                 basedir="${basedir}/bin-deploy" />
+
+            <!-- delete all files except the zip -->
+            <delete includeemptydirs="true">
+                <fileset dir="${basedir}/bin-deploy">
+                    <include name="**/*"/>
+                    <exclude name="${project.name}-${project.version}.zip"/>
+                </fileset>
+            </delete>
+
+        </sequential>
+
+    </target>
+
+    <target name="after">
+    </target>
+    
+</project>
