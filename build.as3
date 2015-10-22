@@ -1,7 +1,7 @@
 import redbean.*;
 import shell.FileSystem;
 
-compile( "src/httplib.as" );
+compile( "src/httplib.as", null, [ "lib-abc/base64lib.abc", "lib-abc/cryptolib.abc" ] );
 
 if( FileSystem.exists( "httplib.abc" ) )
 {
