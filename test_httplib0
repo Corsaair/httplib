@@ -1,0 +1,24 @@
+#!/usr/bin/as3shebang -- 
+
+import shell.*;
+
+/* IMPORTANT
+   httplib has dependencies
+   if you need to use them you will have to load them
+*/
+
+var base64lib:* = Domain.currentDomain.load( "lib-abc/base64lib.abc" );
+trace( base64lib + " loaded" );
+
+var httplib:* = Domain.currentDomain.load( "httplib.abc" );
+trace( httplib + " loaded" );
+
+import net.http.*;
+import flash.utils.*;
+
+trace( "----------------------" );
+
+/* Simple test doe the dependency base64
+*/
+var httpAuthResponse = HttpAuthentication.basicResponse( "foo", "bar" );
+trace( "header = " + httpAuthResponse );
