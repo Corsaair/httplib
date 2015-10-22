@@ -1,0 +1,109 @@
+#!/usr/bin/as3shebang -- 
+
+import shell.*;
+
+var ansilib:* = Domain.currentDomain.load( "lib-abc/ansilib.abc" );
+trace( ansilib + " loaded" );
+
+var base64lib:* = Domain.currentDomain.load( "lib-abc/base64lib.abc" );
+trace( base64lib + " loaded" );
+
+var cryptolib:* = Domain.currentDomain.load( "lib-abc/cryptolib.abc" );
+trace( cryptolib + " loaded" );
+
+/* NOTE
+   We can load more libraries to do more stuff :)
+*/
+var prettyprintlib:* = Domain.currentDomain.load( "lib-abc/prettyprintlib.abc" );
+trace( prettyprintlib + " loaded" );
+
+var httplib:* = Domain.currentDomain.load( "httplib.abc" );
+trace( httplib + " loaded" );
+
+
+import net.http.*;
+import encoding.ansi.*;
+import net.mediatypes.text.*;
+import net.mediatypes.image.*;
+import libraries.prettyprint.*;
+import flash.utils.*;
+
+trace( "----------------------" );
+
+var myconn = new HttpConnection();
+    myconn.onConnect = function():void
+    {
+    	var msg:String = "";
+    		msg += "Connected「G! 」\n";
+    		msg += myconn + "「G! 」";
+
+    	trace( new AnsiString( msg ) );
+    }
+    myconn.onDisconnect = function():void
+    {
+        var msg:String = "";
+    	var msg:String = "";
+    		msg += "Disconnected「R! 」\n";
+    		msg += myconn + "「R! 」";
+
+    	trace( new AnsiString( msg ) );
+    }
+    myconn.onSend = function( bytes:* /*ByteArray*/, total:int ):void
+    {
+        bytes.position = 0;
+
+        var msg:String = "";
+        	msg += " sent " + total + "/" + bytes.length + " bytes 「k3 」"
+        trace( new AnsiString( msg ) );
+        trace( httpRequest.toDebugString( true ) );
+    }
+    myconn.onReceive = function( bytes:* /*ByteArray*/, total:int ):void
+    {
+        bytes.position = 0;
+        
+        var msg:String = "";
+        	msg += " received " + total + "/" + bytes.length + " bytes 「k3 」"
+        trace( new AnsiString( msg ) );
+    }
+
+
+var httpRequest = new HttpRequest();
+    httpRequest.connection = myconn;
+	httpRequest.set( "http://www.as3lang.org" );
+	//httpRequest.set( "http://www.as3lang.org/does/not/exists" );
+	//httpRequest.set( "http://www.as3lang.org/static/logo-256.png" );
+
+var httpResponse = httpRequest.send();
+trace( httpResponse.toDebugString( true, 1024 ) );
+
+if( httpResponse.statusCode == StatusCode.NOT_FOUND.code )
+{
+    trace( new AnsiString( "not found「R! 」" ) );
+}
+else
+{
+    trace( new AnsiString( "found「G! 」" ) );
+    trace( "type = " + httpResponse.contentType );
+
+    /* NOTE
+       we take the body from the HTTP response
+       detect the content-type and if it is HTML
+       we output a syntax colored version of it
+    */
+    if( (httpResponse.contentType == HTML.toString()) ||
+        (httpResponse.contentType == HTML_UTF8.toString()) )
+    {
+        var mediatype = HTML_UTF8;
+        trace( mediatype );
+        trace( "found: " + HTML_UTF8.name );
+        // syntax coloring stuff
+        var code = new CodePrettyPrint();
+        var source:String = httpResponse.bodyText;
+        var pretty:String = code.prettyPrintOne( source, "", true );
+        var sample:String = pretty.substr(0, 1024) + "「K! 」\n...「K! 」";
+        //trace( new AnsiString( pretty ) ); //the full body
+        trace( new AnsiString( sample ) ); // a 1024 byte sample of the body
+    }
+}
+
+
