@@ -1,0 +1,108 @@
+#!/usr/bin/as3shebang -- 
+
+import shell.*;
+
+var ansilib:* = Domain.currentDomain.load( "lib-abc/ansilib.abc" );
+trace( ansilib + " loaded" );
+
+var base64lib:* = Domain.currentDomain.load( "lib-abc/base64lib.abc" );
+trace( base64lib + " loaded" );
+
+var cryptolib:* = Domain.currentDomain.load( "lib-abc/cryptolib.abc" );
+trace( cryptolib + " loaded" );
+
+var httplib:* = Domain.currentDomain.load( "httplib.abc" );
+trace( httplib + " loaded" );
+
+import net.http.*;
+import encoding.ansi.*;
+import flash.utils.*;
+
+trace( "----------------------" );
+
+/* NOTE
+   If you use a custom HttpConnection
+   you can then listen to events (callback)
+*/
+
+function truncateEnd( str:String, maxlength:uint ):String
+{
+	return str.substr( 0, maxlength ) + "...";
+}
+
+function truncateStart( str:String, maxlength:uint ):String
+{
+	var total:uint = str.length;
+	return "..." + str.substr( total - maxlength, maxlength );
+}
+
+var myconn = new HttpConnection();
+    myconn.onConnect = function():void
+    {
+        //trace( "Connected" );
+        //trace( myconn );
+
+    	var msg:String = "";
+    		msg += "Connected「G! 」\n";
+    		msg += myconn + "「G! 」";
+
+    	trace( new AnsiString( msg ) );
+    }
+    myconn.onDisconnect = function():void
+    {
+        //trace( "Disconnected" );
+        //trace( myconn );
+
+        var msg:String = "";
+    	var msg:String = "";
+    		msg += "Disconnected「R! 」\n";
+    		msg += myconn + "「R! 」";
+
+    	trace( new AnsiString( msg ) );
+    }
+    myconn.onSend = function( bytes:* /*ByteArray*/, total:int ):void
+    {
+        bytes.position = 0;
+        //trace( "sent " + total + "/" + bytes.length + " bytes" );
+        //trace( "----------------------" );
+        //trace( bytes.readUTFBytes( bytes.length ) );
+        //trace( "----------------------" );
+
+        var msg:String = "";
+        	msg += " sent " + total + "/" + bytes.length + " bytes 「k3 」"
+        trace( new AnsiString( msg ) );
+        trace( httpRequest.toDebugString( true ) );
+    }
+    myconn.onReceive = function( bytes:* /*ByteArray*/, total:int ):void
+    {
+        bytes.position = 0;
+        /*
+        trace( "received " + total + "/" + bytes.length + " bytes" );
+        trace( "----------------------" );
+        var str:String = bytes.readUTFBytes( bytes.length );
+        if( str.length > 500 )
+        {
+            trace( truncateEnd( str, 200 ) );
+            trace( truncateStart( str, 200 ) );
+        }
+        else
+        {
+            trace( str );
+        }
+        trace( "----------------------" );
+        */
+        
+        var msg:String = "";
+        	msg += " received " + total + "/" + bytes.length + " bytes 「k3 」"
+        trace( new AnsiString( msg ) );
+    }
+
+
+var httpRequest = new HttpRequest();
+    httpRequest.connection = myconn;
+	httpRequest.set( "http://www.as3lang.org" );
+	//httpRequest.set( "http://www.as3lang.org/does/not/exists" );
+	//httpRequest.set( "http://www.as3lang.org/static/logo-256.png" );
+
+var httpResponse = httpRequest.send();
+trace( httpResponse.toDebugString( true, 1024 ) );
