@@ -1,6 +1,16 @@
 import redbean.*;
 import shell.FileSystem;
 
+/* IMPORTANT:
+   you need to compile httplib against its dependencies
+
+   mandatory: base64lib, cryptolib
+   optional: ansilib
+
+   the final result httplib.abc does not contain the bytecode of those
+   libraries, you will have to load the dependencies manually
+   see the test_httplib examples
+*/
 compile( "src/httplib.as", null, [ "lib-abc/base64lib.abc", "lib-abc/cryptolib.abc" ] );
 
 if( FileSystem.exists( "httplib.abc" ) )
