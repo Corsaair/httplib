@@ -89,4 +89,4 @@ include "_global.as";
 include "scriptname.as";
 include "text/html/TemplateEngine.as";
 
-"httplib 0.4";
+"httplib 0.4.1";
