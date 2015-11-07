@@ -183,7 +183,17 @@ package net.http
                 _remoteAddress = a;
             }
             
-            _remotePort = ntohs( _info.ai_addr.sin_port );
+            if( _info.ai_family == AF_INET )
+            {
+                // IPv4
+                _remotePort = ntohs( _info.ai_addr.sin_port );
+            }
+            else
+            {
+                // IPv6
+                _remotePort = ntohs( _info.ai_addr.sin6_port );
+            }
+            
             
             return sockfd;
         }
@@ -191,6 +201,20 @@ package net.http
         private function _findLocalAddressAndPort():void
         {
             //trace( "HttpConnection._findLocalAddressAndPort()" );
+            
+            if( _info.ai_family == AF_INET )
+            {
+                _findLocalAddressAndPort4();
+            }
+            else
+            {
+                _findLocalAddressAndPort6();
+            }
+        }
+        
+        private function _findLocalAddressAndPort4():void
+        {
+            //trace( "HttpConnection._findLocalAddressAndPort4()" );
             
             var addr:sockaddr_in = new sockaddr_in();
             
@@ -216,7 +240,37 @@ package net.http
                 _localPort = ntohs( addr.sin_port );
             }
         }
-        
+
+        private function _findLocalAddressAndPort6():void
+        {
+            //trace( "HttpConnection._findLocalAddressAndPort6()" );
+            
+            var addr:sockaddr_in6 = new sockaddr_in6();
+            
+            var result:int = getsockname( _sockfd, addr );
+            if( result == -1 )
+            {
+                var e:CError = new CError( "", errno );
+                if( enableErrorChecking ) { throw e; }
+            }
+            else
+            {
+                var a:String = inet_ntop( addr.sin6_family, addr );
+                if( !a )
+                {
+                    var e:CError = new CError( "", errno );
+                    if( enableErrorChecking ) { throw e; }
+                }
+                else
+                {
+                    _localAddress = a;    
+                }
+                
+                _localPort = ntohs( addr.sin6_port );
+            }
+        }
+
+
         private function _listRemoteAddresses():Array
         {
             //trace( "HttpConnection._listRemoteAddresses()" );
